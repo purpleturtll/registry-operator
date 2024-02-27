@@ -1,0 +1,114 @@
+name: linters-tests-image
+
+on:
+  pull_request:
+    branches: [ '*' ]
+  push:
+    branches:
+      - "main"
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  REPOSITORY: registry-operator
+  IMAGE: registry-operator
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  golangci-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+          cache: false
+      - uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          skip-cache: true
+
+  shell-linters:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          pre-commit autoupdate
+          git diff-files --quiet
+      - uses: ludeeus/action-shellcheck@master
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+          cache: false
+      - run: go install github.com/mrtazz/checkmake/cmd/checkmake@latest
+      - run: checkmake Makefile
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+          cache: false
+      - run: |
+          make test
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') }}
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: get-latest-tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        with:
+          semver_only: true
+          with_initial_version: true
+          initial_version: v0.0.0
+      - id: tags
+        run: |
+          ./hack/tags.sh \
+            "${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}" \
+            "${{ github.sha }}" \
+            "${{ github.ref_name }}" \
+            "${{ steps.get-latest-tag.outputs.tag }}" \
+            "${GITHUB_OUTPUT}"
+      - uses: docker/build-push-action@v5
+        with:
+          push: ${{ startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main') }}
+          load: ${{ !(startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')) }}
+          tags: ${{ steps.tags.outputs.all }}
+          build-args: |
+            VERSION=${{ steps.tags.outputs.version }}
+          target: runtime
+      - id: grype
+        uses: anchore/scan-action@v3
+        with:
+          image: ${{ steps.tags.outputs.full_version }}
+          output-format: table
+      - uses: aquasecurity/trivy-action@master
+        if: ${{ (steps.grype.outcome == 'success') || (steps.grype.outcome == 'failure') }}
+        with:
+          image-ref: ${{ steps.tags.outputs.full_version }}
+          format: table
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH,MEDIUM'
