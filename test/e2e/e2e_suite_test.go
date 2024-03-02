@@ -20,12 +20,15 @@ import (
 	"fmt"
 	"testing"
 
+	//revive:disable
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	//revive:enable
 )
 
 // Run e2e tests using the Ginkgo runner.
 func TestE2E(t *testing.T) {
+	t.Parallel()
 	RegisterFailHandler(Fail)
 	fmt.Fprintf(GinkgoWriter, "Starting registry-operator suite\n")
 	RunSpecs(t, "e2e suite")

@@ -21,8 +21,10 @@ import (
 	"os/exec"
 	"time"
 
+	//revive:disable
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	//revive:disable
 
 	"github.com/registry-operator/registry-operator/test/utils"
 )
@@ -60,10 +62,11 @@ var _ = Describe("controller", Ordered, func() {
 			var err error
 
 			// projectimage stores the name of the image used in the example
-			var projectimage = "example.com/registry-operator:v0.0.1"
+			projectimage := "example.com/registry-operator:v0.0.1"
+			imageEnvVar := fmt.Sprintf("IMG=%s", projectimage)
 
 			By("building the manager(Operator) image")
-			cmd := exec.Command("make", "docker-build", fmt.Sprintf("IMG=%s", projectimage))
+			cmd := exec.Command("make", "docker-build", imageEnvVar)
 			_, err = utils.Run(cmd)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
@@ -74,9 +77,10 @@ var _ = Describe("controller", Ordered, func() {
 			By("installing CRDs")
 			cmd = exec.Command("make", "install")
 			_, err = utils.Run(cmd)
+			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 			By("deploying the controller-manager")
-			cmd = exec.Command("make", "deploy", fmt.Sprintf("IMG=%s", projectimage))
+			cmd = exec.Command("make", "deploy", imageEnvVar)
 			_, err = utils.Run(cmd)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
@@ -115,7 +119,6 @@ var _ = Describe("controller", Ordered, func() {
 				return nil
 			}
 			EventuallyWithOffset(1, verifyControllerUp, time.Minute, time.Second).Should(Succeed())
-
 		})
 	})
 })
