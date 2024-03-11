@@ -46,16 +46,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          pre-commit autoupdate
-          git diff-files --quiet
       - uses: ludeeus/action-shellcheck@master
       - uses: actions/setup-go@v5
         with:
           go-version-file: ./go.mod
           cache: false
-      - run: go install github.com/mrtazz/checkmake/cmd/checkmake@latest
-      - run: checkmake Makefile
+      # FIXME: uncomment when Makefile is added
+      # - run: go install github.com/mrtazz/checkmake/cmd/checkmake@latest
+      # - run: checkmake Makefile
 
   tests:
     runs-on: ubuntu-latest
@@ -66,7 +64,7 @@ jobs:
           go-version-file: ./go.mod
           cache: false
       - run: |
-          make test
+          go test ./...
 
   docker:
     runs-on: ubuntu-latest
