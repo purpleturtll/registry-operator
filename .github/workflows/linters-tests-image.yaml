@@ -97,7 +97,6 @@ jobs:
           tags: ${{ steps.tags.outputs.all }}
           build-args: |
             VERSION=${{ steps.tags.outputs.version }}
-          target: runtime
       - id: grype
         uses: anchore/scan-action@v3
         with:
