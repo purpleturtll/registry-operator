@@ -1,0 +1,50 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: registry-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Registry is the Schema for the registries API.
+      displayName: Registry
+      kind: Registry
+      name: registries.registry-operator.dev
+      version: v1alpha1
+  description: "Operator for CNCF Distribution Registry \U0001F4E6"
+  displayName: registry-operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - oci
+  - registry
+  - distribution
+  links:
+  - name: Registry Operator
+    url: https://registry-operator.domain
+  maintainers:
+  - email: mateusz.urbanek.98@gmail.com
+    name: Mateusz Urbanek
+  maturity: alpha
+  provider:
+    name: registry-operator
+    url: registry-operator.dev
+  version: 0.0.0

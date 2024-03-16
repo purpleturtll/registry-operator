@@ -1,0 +1,10 @@
+{
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "signoff": "shanduur-auto[bot] <75127809+shanduur-auto@users.noreply.github.com>",
+  "packages": {
+    ".": {
+      "release-type": "go"
+    }
+  }
+}

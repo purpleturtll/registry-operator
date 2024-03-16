@@ -1,0 +1,26 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release_please
+        with:
+          token: ${{ secrets.PAT }} # need to use separate PAT from GITHUB_TOKEN, so new actions can be triggered
+          config-file: .github/release-please-config.json
+      - uses: actions/checkout@v4
+      - uses: fregante/setup-git-user@v2
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./hack/release-gen.sh ${{ github.actor }}
