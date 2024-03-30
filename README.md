@@ -16,6 +16,7 @@ The following quality gates are ensuring the quality and maintainability of the 
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/registry-operator/registry-operator)](https://goreportcard.com/report/github.com/registry-operator/registry-operator)
 [![codecov](https://codecov.io/gh/registry-operator/registry-operator/graph/badge.svg?token=TDD92A90UE)](https://codecov.io/gh/registry-operator/registry-operator)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fregistry-operator%2Fregistry-operator.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fregistry-operator%2Fregistry-operator?ref=badge_shield)
 
 ## Table of Contents
 
@@ -54,6 +55,8 @@ For detailed instructions, refer to the [documentation][documentation].
 We welcome contributions from the community! If you're interested in contributing to `registry-operator`, please read our [Contribution Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before getting started.
 
 ## License
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fregistry-operator%2Fregistry-operator.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fregistry-operator%2Fregistry-operator?ref=badge_large)
 
 `registry-operator` is licensed under the [Apache-2.0][license].
 
