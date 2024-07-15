@@ -1,4 +1,4 @@
 ## Append samples of your project ##
 resources:
-- _v1alpha1_registry.yaml
+- _v1alpha1_registry_inmemory.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

@@ -37,17 +37,43 @@ spec:
           metadata:
             type: object
           spec:
+            default:
+              storage:
+                type: inmemory
             description: RegistrySpec defines the desired state of Registry.
             properties:
-              storageType:
-                default: inmemory
-                enum:
-                - inmemory
-                type: string
+              storage:
+                default:
+                  type: inmemory
+                properties:
+                  type:
+                    default: inmemory
+                    enum:
+                    - inmemory
+                    type: string
+                required:
+                - type
+                type: object
+            required:
+            - storage
             type: object
           status:
+            default:
+              phase: Pending
             description: RegistryStatus defines the observed state of Registry.
+            properties:
+              phase:
+                default: Pending
+                enum:
+                - Pending
+                - Running
+                - Deleting
+                type: string
+            required:
+            - phase
             type: object
+        required:
+        - spec
         type: object
     served: true
     storage: true

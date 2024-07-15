@@ -20,41 +20,53 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 type StorageType string
 
 const StorageTypeInMemory StorageType = "inmemory"
 
-// RegistrySpec defines the desired state of Registry.
-type RegistrySpec struct {
+type Storage struct {
 	// +kubebuilder:default="inmemory"
 	// +kubebuilder:validation:Enum=inmemory
-	// +kubebuilder:validation:Optional
-	StorageType StorageType `json:"storageType,omitempty"`
+	Type StorageType `json:"type"`
 }
+
+// RegistrySpec defines the desired state of Registry.
+type RegistrySpec struct {
+	// +kubebuilder:default={"type": "inmemory"}
+	// +kubebuilder:validation:Required
+	Storage Storage `json:"storage"`
+}
+
+// +kubebuilder:validation:Enum=Pending;Running;Deleting
+type RegistryPhase string
+
+const (
+	RegistryPhasePending  RegistryPhase = "Pending"
+	RegistryPhaseRunning  RegistryPhase = "Running"
+	RegistryPhaseDeleting RegistryPhase = "Deleting"
+)
 
 // RegistryStatus defines the observed state of Registry.
 type RegistryStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// +kubebuilder:default="Pending"
+	Phase RegistryPhase `json:"phase"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuildre:printcolumn:name="Phase",type="string",JSONPath=".status.phase",description="The current phase of the registry"
 // Registry is the Schema for the registries API.
 type Registry struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   RegistrySpec   `json:"spec,omitempty"`
+	// +kubebuilder:default={"storage": { "type": "inmemory"}}
+	Spec RegistrySpec `json:"spec"`
+	// +kubebuilder:default={phase:Pending}
 	Status RegistryStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-
+// +kubebuilder:object:root=true
 // RegistryList contains a list of Registry.
 type RegistryList struct {
 	metav1.TypeMeta `json:",inline"`
